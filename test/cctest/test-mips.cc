@@ -46,10 +46,13 @@ TEST(MIPSFunctionCalls) {
   LocalContext env;  // from cctest.h
 
   const char* c_source = ""
-    "function foo(arg1, arg2, arg3, arg4, arg5) {"
+    "function foo1() {"
+    "  return 0xa;"
+    "};"
+    "function foo2(arg1, arg2, arg3, arg4, arg5) {"
     "  return arg4;"
     "};"
-    "foo(0x10, 0x20, 0x40, 0x80, 0x100);";
+    "foo2(0x10, 0x20, 0x40, 0x80, 0x100);";
   Local<String> source = ::v8::String::New(c_source);
   Local<Script> script = ::v8::Script::Compile(source);
   CHECK_EQ(0x80,  script->Run()->Int32Value());
