@@ -45,16 +45,28 @@ TEST(MIPSFunctionCalls) {
   v8::HandleScope scope;
   LocalContext env;  // from cctest.h
 
-  const char* c_source = ""
-    "function foo1() {"
-    "  return 0xa;"
-    "};"
-    "function foo2(arg1, arg2, arg3, arg4, arg5) {"
-    "  return arg4;"
-    "};"
-    "foo2(0x10, 0x20, 0x40, 0x80, 0x100);";
-  Local<String> source = ::v8::String::New(c_source);
-  Local<Script> script = ::v8::Script::Compile(source);
-  CHECK_EQ(0x80,  script->Run()->Int32Value());
+  const char* c_source_1 =
+    "function foo() {"
+    "  return 0xabcd;"
+    "}"
+    "foo();";
+  Local<String> source_1 = ::v8::String::New(c_source_1);
+  Local<Script> script_1 = ::v8::Script::Compile(source_1);
+  CHECK_EQ(0xabcd, script_1->Run()->Int32Value());
+
+
+  const char* c_source_2 =
+    "function foo1(arg1, arg2, arg3, arg4, arg5) {"
+    "  return foo2(arg1, foo2(arg3, arg4));"
+    "}"
+    ""
+    "function foo2(arg1, arg2) {"
+    "  return arg2;"
+    "}"
+    "foo1(1, 2, 3, 4, 5);";
+
+  Local<String> source_2 = ::v8::String::New(c_source_2);
+  Local<Script> script_2 = ::v8::Script::Compile(source_2);
+  CHECK_EQ(4, script_2->Run()->Int32Value());
 }
 
